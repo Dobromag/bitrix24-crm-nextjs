@@ -1,0 +1,14 @@
+// src/features/payments/components/PaymentsPage/PaymentsPage.module.scss
+@use "@/styles/variables" as *;
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.title {
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  margin-bottom: 32px !important;
+}

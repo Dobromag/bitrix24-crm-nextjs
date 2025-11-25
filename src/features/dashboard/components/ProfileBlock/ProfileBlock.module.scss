@@ -1,0 +1,25 @@
+@use "@/styles/variables" as *;
+.profileBlock {
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: $shadow-light;
+  background: $color-bg;
+  border: 1px solid $color-border;
+  @media (max-width: 600px) {
+    padding: 12px;
+  }
+}
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  @media (max-width: 600px) {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+}
+.field {
+  margin-bottom: 8px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}

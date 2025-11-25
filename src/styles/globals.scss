@@ -1,0 +1,19 @@
+@use "variables" as *;
+
+:root {
+  --font-family: #{$font-family-main};
+  --second-family: #{$font-family-alt};
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: $color-secondary;
+  font-family: var(--font-family);
+  color: $color-text;
+}
+
+* {
+  min-width: 0;
+}

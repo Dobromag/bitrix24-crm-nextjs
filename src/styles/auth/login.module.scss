@@ -1,0 +1,154 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  min-height: 100vh;
+  background: #f5f6fa;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    height: auto;
+  }
+}
+
+.container.register .formWrapper {
+  padding: 0px 130px;
+  row-gap: 5px;
+
+  @media (max-width: 768px) {
+    padding: 40px 20px;
+  }
+}
+
+.formWrapper {
+  box-sizing: border-box;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 68px 130px;
+  row-gap: 20px;
+  overflow: auto; // Добавил auto для скролла, если полей много
+
+  @media (max-width: 768px) {
+    padding: 40px 20px;
+  }
+}
+
+.logo {
+  font-family: var(--font-family), sans-serif;
+  font-weight: 700;
+  font-size: 40px;
+  color: #010101;
+  text-transform: uppercase;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 500;
+  color: #010101;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  max-width: 390px;
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+  text-align: center;
+}
+
+.button {
+  width: 100%;
+  padding: 16px 24px;
+  min-height: 50px;
+  background: #0147ff;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 18px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 71, 255, 0.2);
+  text-transform: none;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled) {
+    background: #0033cc;
+  }
+}
+
+.orWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 390px;
+  margin: 4px 0px;
+
+  .line {
+    flex: 1;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  .or {
+    font-size: 16px;
+    color: #aeaeae;
+    white-space: nowrap;
+  }
+}
+
+.registerLink {
+  font-family: var(--font-family), sans-serif;
+  font-weight: 300;
+  font-size: 16px;
+  letter-spacing: -0.03em;
+  text-align: center;
+  background: linear-gradient(180deg, #0167ca 0%, #38a8fa 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-decoration: none;
+
+  &:hover {
+    background: linear-gradient(180deg, #0147ff 0%, #00b4ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.imageWrapper {
+  flex: 1;
+  position: relative;
+  max-width: 50%;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.image {
+  position: absolute;
+  inset: 0;
+  background-size: auto 100%;
+  background-position: 36%;
+  background-repeat: no-repeat;
+}

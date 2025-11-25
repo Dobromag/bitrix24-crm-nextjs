@@ -1,0 +1,62 @@
+@use "@/styles/variables" as *;
+.sliderContainer {
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: $shadow-light;
+  background: $color-bg;
+  border: 1px solid $color-border;
+  @media (max-width: 600px) {
+    padding: 12px;
+  }
+}
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  @media (max-width: 600px) {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+}
+.swiper {
+  width: 100%;
+  height: auto;
+  padding-bottom: 40px; // Space for pagination
+}
+.slide {
+  display: flex;
+  justify-content: center;
+}
+.card {
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: $shadow-light;
+  background: $color-bg;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+  @media (max-width: 600px) {
+    padding: 12px;
+  }
+}
+.cardText {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  @media (max-width: 600px) {
+    font-size: 14px;
+  }
+}
+.button {
+  margin-top: 8px;
+  width: 100%;
+}
+.downloadButton {
+  margin-top: 8px;
+  width: 100%;
+}
+.swiper-pagination {
+  position: absolute;
+  bottom: 0;
+  margin-top: 16px;
+}

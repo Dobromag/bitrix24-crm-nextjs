@@ -1,0 +1,45 @@
+.phoneInput {
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 4px;
+  padding: 0px 12px;
+  font-size: 16px;
+  height: 48px;
+
+  &:focus-within {
+    border-color: #0147ff;
+  }
+
+  &.error {
+    border-color: #da2323;
+  }
+
+  input {
+    border: none;
+    outline: none;
+    font-size: 16px;
+    flex: 1;
+    padding: 0 8px;
+    background: transparent;
+  }
+
+  .PhoneInputCountry {
+    margin-right: 8px;
+
+    .PhoneInputCountrySelect {
+      background: none;
+      border: none;
+      cursor: pointer;
+
+      .PhoneInputCountryIcon {
+        width: 24px;
+        height: 16px;
+      }
+
+      .PhoneInputCountrySelectArrow {
+        margin-left: 4px;
+      }
+    }
+  }
+}

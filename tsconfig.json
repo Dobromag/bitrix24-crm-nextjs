@@ -18,8 +18,9 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".", // Явно указываем базовый URL для путей
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"] // Алиас для src/
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

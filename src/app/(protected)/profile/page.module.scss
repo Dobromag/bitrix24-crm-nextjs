@@ -1,0 +1,48 @@
+@use "@styles/variables" as *;
+
+.profileContainer {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.profileBlock {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+}
+
+.avatarSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-bottom: 40px;
+  margin-top: 40px;
+}
+
+.contentSection {
+  display: flex;
+  flex-direction: column;
+  width: 672px;
+  height: auto; // Убрал фиксированную высоту для гибкости
+  gap: 4px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+}
+
+.title {
+  font-family: $font-family-main;
+  font-size: 24px;
+  color: $color-text;
+  margin: 0 0 16px;
+}
+
+.subtitle {
+  font-family: $font-family-main;
+  font-size: 20px;
+  color: $color-text;
+  margin: 0;
+}
