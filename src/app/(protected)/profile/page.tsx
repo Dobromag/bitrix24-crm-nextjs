@@ -88,6 +88,7 @@ export default function ProfilePage() {
         try {
           const formData = new FormData();
           formData.append("avatar", rawAvatar);
+          formData.append("userId", userData?.id.toString() || "");
           const res = await fetch("/api/upload-avatar", {
             method: "POST",
             body: formData,
