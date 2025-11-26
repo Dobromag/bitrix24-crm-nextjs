@@ -56,6 +56,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
+    console.log("Fields in formData:", Array.from(formData.entries()));
     const file = formData.get("avatar");
     const userIdRaw = formData.get("userId");
 
