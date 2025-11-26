@@ -98,7 +98,7 @@ export default function ProfilePage() {
           if (!res.ok || !data.avatarUrl) {
             throw new Error(data.error || "Ошибка загрузки аватара");
           }
-          avatarForServer = data.avatarUrl;
+          avatarForServer = `/avatars/${data.avatarUrl.split("/").pop()}`;
         } catch (err) {
           setServerError(
             err instanceof Error ? err.message : "Неизвестная ошибка"
