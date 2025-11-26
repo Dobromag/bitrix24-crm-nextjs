@@ -6,6 +6,10 @@ const nextConfig: NextConfig = {
   sassOptions: {
     includePaths: [path.join(__dirname, "src/styles")],
   },
+  images: {
+    // Отключаем оптимизацию для аватаров в public
+    unoptimized: true,
+  },
   webpack(config) {
     config.resolve.alias = {
       ...config.resolve.alias,

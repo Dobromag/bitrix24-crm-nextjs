@@ -55,7 +55,11 @@ export const useAvatarForm = (defaultValue: string) => {
       setPreview(url);
       form.setValue(
         "avatar",
-        url === "/images/icons/default-avatar.svg" ? null : url
+        url.startsWith("/avatars/")
+          ? url
+          : url === "/images/icons/default-avatar.svg"
+          ? null
+          : url
       );
     },
     [form, localPreviewUrl]
