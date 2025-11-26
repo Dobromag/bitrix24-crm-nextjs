@@ -59,18 +59,27 @@ export async function POST(req: NextRequest) {
     const file = formData.get("avatar");
     const userIdRaw = formData.get("userId");
 
+    // Проверяем и конвертируем userId
+    let userId: number;
+    if (typeof userIdRaw === "string") {
+      userId = Number(userIdRaw);
+    } else if (typeof userIdRaw === "number") {
+      userId = userIdRaw;
+    } else {
+      return NextResponse.json({ error: "Invalid userId" }, { status: 400 });
+    }
+
+    if (isNaN(userId)) {
+      return NextResponse.json({ error: "Invalid userId" }, { status: 400 });
+    }
+
+    // Проверка файла
     if (!(file instanceof File)) {
       return NextResponse.json(
         { error: "Avatar file required" },
         { status: 400 }
       );
     }
-
-    if (typeof userIdRaw !== "string" || isNaN(Number(userIdRaw))) {
-      return NextResponse.json({ error: "Invalid userId" }, { status: 400 });
-    }
-
-    const userId = Number(userIdRaw);
 
     const avatarsDir = process.env.AVATARS_PATH || "/data/avatars";
     fs.mkdirSync(avatarsDir, { recursive: true });
@@ -84,6 +93,7 @@ export async function POST(req: NextRequest) {
 
     const publicUrl = `/api/upload-avatar?filename=${filename}`;
 
+    // Обновляем путь аватара в БД
     db.prepare("UPDATE users SET avatar = ? WHERE id = ?").run(
       publicUrl,
       userId
