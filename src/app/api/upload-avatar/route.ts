@@ -1,72 +1,97 @@
-// src/app/api/upload-avatar/route.ts
-import fs from "fs/promises";
-import { jwtVerify } from "jose";
+import db from "@/lib/db";
+import fs from "fs";
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 
-const JWT_SECRET = process.env.JWT_SECRET!;
+export const runtime = "nodejs";
 
-async function verifyToken(req: NextRequest) {
-  const token = req.cookies.get("authToken")?.value;
-  console.log("Token from cookies:", token ? "exists" : "MISSING");
-  if (!token) throw new Error("Unauthorized");
-
-  const { payload } = await jwtVerify(
-    token,
-    new TextEncoder().encode(JWT_SECRET),
-    {
-      algorithms: ["HS256"],
-    }
-  );
-  return payload as { id: number };
-}
-
-export async function POST(req: NextRequest) {
+// =======================================================================================
+// GET — отдача аватара
+// /api/upload-avatar?filename=user_1_173883838.jpg
+// =======================================================================================
+export async function GET(req: NextRequest) {
   try {
-    const { id } = await verifyToken(req);
-    const formData = await req.formData();
-    const file = formData.get("avatar") as File | null;
+    const { searchParams } = new URL(req.url);
+    const filename = searchParams.get("filename");
 
-    if (!file) {
-      console.log("ERROR: No file");
-      return NextResponse.json({ error: "No file" }, { status: 400 });
-    }
-
-    // Валидация
-    if (!["image/jpeg", "image/png"].includes(file.type)) {
-      return NextResponse.json({ error: "Only JPG/PNG" }, { status: 400 });
-    }
-    if (file.size > 2 * 1024 * 1024) {
-      return NextResponse.json({ error: "Max 2MB" }, { status: 400 });
-    }
-
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const ext = file.name.split(".").pop() || "jpg";
-    const timestamp = Date.now();
-    const filename = `user_${id}_${timestamp}.${ext}`;
-    const filepath = path.join(
-      process.cwd(),
-      "public",
-      "images",
-      "avatars",
-      filename
-    );
-    // Создаём папку, если нет
-    await fs.mkdir(path.dirname(filepath), { recursive: true });
-    await fs.writeFile(filepath, buffer);
-
-    const avatarUrl = `/images/avatars/${filename}`;
-    return NextResponse.json({ avatarUrl });
-  } catch (error) {
-    console.error("=== API ERROR ===", error);
-    if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 401 });
-    } else {
-      console.error("Non-Error caught:", error);
+    if (!filename) {
       return NextResponse.json(
-        { error: "Internal server error" },
-        { status: 500 }
+        { error: "Filename is required" },
+        { status: 400 }
       );
     }
+
+    const avatarsDir = process.env.AVATARS_PATH || "/data/avatars";
+    const filePath = path.join(avatarsDir, filename);
+
+    if (!fs.existsSync(filePath)) {
+      return NextResponse.json({ error: "File not found" }, { status: 404 });
+    }
+
+    const file = fs.readFileSync(filePath);
+
+    const ext = filename.split(".").pop() ?? "jpg";
+    const contentType =
+      ext === "png"
+        ? "image/png"
+        : ext === "webp"
+        ? "image/webp"
+        : "image/jpeg";
+
+    return new NextResponse(file, {
+      headers: {
+        "Content-Type": contentType,
+        "Cache-Control": "public, max-age=31536000",
+      },
+    });
+  } catch (error) {
+    console.error("Avatar GET error:", error);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  }
+}
+
+// =======================================================================================
+// POST — загрузка аватара
+// =======================================================================================
+export async function POST(req: NextRequest) {
+  try {
+    const formData = await req.formData();
+    const file = formData.get("avatar");
+    const userIdRaw = formData.get("userId");
+
+    if (!(file instanceof File)) {
+      return NextResponse.json(
+        { error: "Avatar file required" },
+        { status: 400 }
+      );
+    }
+
+    if (typeof userIdRaw !== "string" || isNaN(Number(userIdRaw))) {
+      return NextResponse.json({ error: "Invalid userId" }, { status: 400 });
+    }
+
+    const userId = Number(userIdRaw);
+
+    const avatarsDir = process.env.AVATARS_PATH || "/data/avatars";
+    fs.mkdirSync(avatarsDir, { recursive: true });
+
+    const extension = file.name.split(".").pop() || "jpg";
+    const filename = `user_${userId}_${Date.now()}.${extension}`;
+    const filePath = path.join(avatarsDir, filename);
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+    fs.writeFileSync(filePath, buffer);
+
+    const publicUrl = `/api/upload-avatar?filename=${filename}`;
+
+    db.prepare("UPDATE users SET avatar = ? WHERE id = ?").run(
+      publicUrl,
+      userId
+    );
+
+    return NextResponse.json({ avatarUrl: publicUrl }, { status: 200 });
+  } catch (error) {
+    console.error("Avatar upload error:", error);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
