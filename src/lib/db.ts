@@ -1,27 +1,24 @@
-import * as betterSqlite3 from "better-sqlite3";
+import BetterSqlite3 from "better-sqlite3";
 import fs from "fs";
 import path from "path";
 
-let dbInstance: betterSqlite3.Database;
+let dbInstance: BetterSqlite3.Database | null = null;
 
-// ==== ПУТИ К ПАПКАМ ====
 const getDbPath = () =>
   process.env.DATABASE_PATH ||
   path.join(process.cwd(), ".data", "database.sqlite");
-const getAvatarsDir = () => process.env.AVATARS_PATH || "/data/avatars";
 
-export default function getDb(): betterSqlite3.Database {
-  if (dbInstance === null) {
+const getAvatarsDir = () =>
+  process.env.AVATARS_PATH || path.join(process.cwd(), "data", "avatars");
+
+export default function getDb(): BetterSqlite3.Database {
+  if (!dbInstance) {
     const dbPath = getDbPath();
-    const dbDir = path.dirname(dbPath);
-    fs.mkdirSync(dbDir, { recursive: true });
+    fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+    fs.mkdirSync(getAvatarsDir(), { recursive: true });
 
-    const avatarsDir = getAvatarsDir();
-    fs.mkdirSync(avatarsDir, { recursive: true });
+    dbInstance = new BetterSqlite3(dbPath);
 
-    dbInstance = betterSqlite3.default(dbPath);
-
-    // Создание таблицы users
     dbInstance.exec(`
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,13 +34,11 @@ export default function getDb(): betterSqlite3.Database {
       );
     `);
 
-    // Индексы
     dbInstance.exec(`
       CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
       CREATE INDEX IF NOT EXISTS idx_users_name ON users(name);
     `);
 
-    // Таблица pending_syncs
     dbInstance.exec(`
       CREATE TABLE IF NOT EXISTS pending_syncs (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -56,38 +51,12 @@ export default function getDb(): betterSqlite3.Database {
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       );
     `);
+
     dbInstance.exec(`
       CREATE INDEX IF NOT EXISTS idx_pending_user_id ON pending_syncs(user_id);
       CREATE INDEX IF NOT EXISTS idx_pending_attempts ON pending_syncs(attempts);
     `);
-
-    // Добавление отсутствующих колонок (если нужно, иначе удалите блок)
-    interface TableColumn {
-      cid: number;
-      name: string;
-      type: string;
-      notnull: number;
-      dflt_value: string | null;
-      pk: number;
-    }
-    const columns = dbInstance
-      .prepare("PRAGMA table_info(users)")
-      .all() as TableColumn[];
-
-    interface RequiredColumn {
-      name: string;
-      type: string;
-    }
-
-    const requiredColumns: RequiredColumn[] = [
-      // Если "previous_password_hash" не используется (вы используете plural 'hashes'), удалите это.
-    ];
-
-    requiredColumns.forEach((col) => {
-      if (!columns.some((c) => c.name === col.name)) {
-        dbInstance.exec(`ALTER TABLE users ADD COLUMN ${col.name} ${col.type}`);
-      }
-    });
   }
+
   return dbInstance;
 }
