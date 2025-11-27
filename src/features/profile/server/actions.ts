@@ -118,12 +118,18 @@ export async function updateUser(data: Partial<UpdateUserInput>) {
       updateFields.push("avatar = ?");
       updateValues.push(normalized);
       if (current && (normalized === null || normalized !== current)) {
-        const oldFilePath = path.join(process.cwd(), "public", current);
-        await fs
-          .unlink(oldFilePath)
-          .catch((err) =>
-            console.warn("Ошибка удаления старого аватара:", err)
-          );
+        const urlParts = current.split("?");
+        if (urlParts[1]) {
+          const params = new URLSearchParams(urlParts[1]);
+          const filename = params.get("filename");
+          if (filename) {
+            const avatarsDir = process.env.AVATARS_PATH || "/data/avatars";
+            const oldFilePath = path.join(avatarsDir, filename);
+            await fs
+              .unlink(oldFilePath)
+              .catch((err) => console.warn("Delete error:", err));
+          }
+        }
       }
     }
   }
