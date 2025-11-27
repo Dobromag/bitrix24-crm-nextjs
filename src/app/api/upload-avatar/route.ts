@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     return new NextResponse(file, {
       headers: {
         "Content-Type": contentType,
-        "Cache-Control": "public, max-age=31536000",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
       },
     });
   } catch (error) {
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(await file.arrayBuffer());
     fs.writeFileSync(filePath, buffer);
     fs.chmodSync(filePath, 0o666); // Для read
-    const publicUrl = `/api/upload-avatar?filename=${filename}`; // Динамический URL
+    const publicUrl = `/api/upload-avatar?filename=${filename}&v=${Date.now()}`;
     db.prepare("UPDATE users SET avatar = ? WHERE id = ?").run(
       publicUrl,
       userId
