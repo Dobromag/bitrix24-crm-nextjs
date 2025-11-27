@@ -70,6 +70,7 @@ export default function Avatar({
         }}
         priority
         unoptimized
+        onError={() => console.error("Failed to load avatar:", preview)}
       />
       {isHovering && !disabled && (
         <div
